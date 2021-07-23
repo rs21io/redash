@@ -118,17 +118,17 @@ export default function Renderer({ options, data }: any) {
     return null;
   }
 
-  function prepareData(rows: any) {
-    let column: any = {};
+  function prepareLink(rows: Record<string, any>) {
+    let column: Record<string, any> = {};
     let prepared = { rows: rows };
 
-    options.columns.forEach((newColumn: any) => {
-      if (newColumn.linkUrlTemplate !== "{{ @ }}") {
-        column = newColumn;
+    options.columns.forEach((optionColumn: Record<string, any>) => {
+      if (optionColumn.linkUrlTemplate !== "{{ @ }}") {
+        column = optionColumn;
       }
     });
 
-    prepared = extend({ "@": prepared.rows.map((rows: any) => rows[column.name]) }, prepared);
+    prepared = extend({ "@": prepared.rows.map((row: Record<string, any>) => row[column.name]) }, prepared);
 
     const href = trim(formatSimpleTemplate(column.linkUrlTemplate, prepared));
     if (href === "") {
@@ -140,17 +140,10 @@ export default function Renderer({ options, data }: any) {
 
     const result = {
       href,
-      text: text !== "" ? text : href,
+      text: text,
+      target: column.linkOpenInNewTab ? "_blank" : "_self",
+      title: title,
     };
-
-    if (title !== "") {
-      // @ts-expect-error ts-migrate(2339) FIXME: Property 'title' does not exist on type '{ href: s... Remove this comment to see the full error message
-      result.title = title;
-    }
-    if (column.linkOpenInNewTab) {
-      // @ts-expect-error ts-migrate(2339) FIXME: Property 'target' does not exist on type '{ href: ... Remove this comment to see the full error message
-      result.target = "_blank";
-    }
 
     return result;
   }
@@ -161,11 +154,15 @@ export default function Renderer({ options, data }: any) {
     },
   };
 
-  const { ...props } = prepareData(selectedData);
+  const { ...props } = prepareLink(selectedData);
 
   return (
     <div className="table-visualization-container">
-      <button className="ant-btn-primary ant-btn"><a className="link" {...props}>Charts</a></button>
+      <button className="ant-btn-primary ant-btn" disabled={selectedData.length >= 1 ? false : true}>
+        <a className="link" {...props}>
+          Charts
+        </a>
+      </button>
       <Table
         rowSelection={{ type: "checkbox", ...rowSelection }}
         className="table-fixed-header"
