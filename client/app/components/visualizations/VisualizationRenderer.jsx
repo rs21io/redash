@@ -6,6 +6,7 @@ import useImmutableCallback from "@/lib/hooks/useImmutableCallback";
 import Filters, { FiltersType, filterData } from "@/components/Filters";
 import { VisualizationType } from "@redash/viz/lib";
 import { Renderer } from "@/components/visualizations/visualizationComponents";
+import { getQueryAction, store } from "@/store";
 
 function combineFilters(localFilters, globalFilters) {
   // tiny optimization - to avoid unnecessary updates
@@ -49,10 +50,16 @@ export default function VisualizationRenderer(props) {
     }
   });
 
+  const dispatch = dataRows => store.dispatch(getQueryAction(dataRows));
+
   // Reset local filters when query results updated
   useEffect(() => {
     handleFiltersChange(combineFilters(data.filters, props.filters));
   }, [data.filters, props.filters, handleFiltersChange]);
+
+  useEffect(() => {
+    dispatch(data.rows);
+  }, [data.rows]);
 
   // Update local filters when global filters changed.
   // For correct behavior need to watch only `props.filters` here,
