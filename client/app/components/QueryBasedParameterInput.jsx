@@ -2,13 +2,16 @@ import { find, isArray, get, first, map, intersection, isEqual, isEmpty } from "
 import React from "react";
 import PropTypes from "prop-types";
 import SelectWithVirtualScroll from "@/components/SelectWithVirtualScroll";
+import { connect } from "react-redux";
+import { getQueryAction } from "@/store";
 
-export default class QueryBasedParameterInput extends React.Component {
+class QueryBasedParameterInput extends React.Component {
   static propTypes = {
     parameter: PropTypes.any, // eslint-disable-line react/forbid-prop-types
     value: PropTypes.any, // eslint-disable-line react/forbid-prop-types
     mode: PropTypes.oneOf(["default", "multiple"]),
     queryId: PropTypes.number,
+    queryResult: PropTypes.any,
     onSelect: PropTypes.func,
     className: PropTypes.string,
   };
@@ -18,6 +21,7 @@ export default class QueryBasedParameterInput extends React.Component {
     mode: "default",
     parameter: null,
     queryId: null,
+    queryResult: null,
     onSelect: () => {},
     className: "",
   };
@@ -46,8 +50,37 @@ export default class QueryBasedParameterInput extends React.Component {
 
   setValue(value) {
     const { options } = this.state;
+    const { queryResult, parameter, widgets } = this.props;
+
     if (this.props.mode === "multiple") {
       value = isArray(value) ? value : [value];
+      const arr = [];
+      const widgetTypes = [];
+
+      widgets.forEach(widget => {
+        if (isArray(widget.visualization)) {
+          widget.visualization.forEach(visualization => {
+            widgetTypes.push(visualization.type);
+          });
+        } else if (widget.visualization) {
+          widgetTypes.push(widget.visualization.type);
+        }
+      });
+
+      if (widgetTypes.includes("SELECTION_TABLE") && !parameter.hasPendingValue) {
+        queryResult.forEach(result => {
+          if (!arr.includes(result[parameter.title])) {
+            // Specifically checking the options value and queryResult of battery data because they differ i.e 100 vs 100.0
+            if (result["soc_min" || "soc_max"] === 0 || 100) {
+              arr.push(`${result[parameter.title]}.0`);
+            }
+
+            arr.push(`${result[parameter.title]}`);
+          }
+        });
+        value = arr;
+      }
+
       const optionValues = map(options, option => option.value);
       const validValues = intersection(value, optionValues);
       this.setState({ value: validValues });
@@ -62,6 +95,7 @@ export default class QueryBasedParameterInput extends React.Component {
   async _loadOptions(queryId) {
     if (queryId && queryId !== this.state.queryId) {
       this.setState({ loading: true });
+
       const options = await this.props.parameter.loadDropdownValues();
 
       // stale queryId check
@@ -79,6 +113,7 @@ export default class QueryBasedParameterInput extends React.Component {
   render() {
     const { className, mode, onSelect, queryId, value, ...otherProps } = this.props;
     const { loading, options } = this.state;
+
     return (
       <span>
         <SelectWithVirtualScroll
@@ -98,3 +133,16 @@ export default class QueryBasedParameterInput extends React.Component {
     );
   }
 }
+
+function mapStateToProps(state) {
+  const { QueryData } = state;
+  return { queryResult: QueryData.Data };
+}
+
+const mapDispatchToProps = () => {
+  return {
+    getqueryaction: getQueryAction(),
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(QueryBasedParameterInput);
