@@ -15,7 +15,7 @@ const multipleValuesProps = {
   maxTagPlaceholder: num => `+${num.length} more`,
 };
 
-export default class ParameterValueInput extends React.Component {
+class ParameterValueInput extends React.Component {
   static propTypes = {
     type: PropTypes.string,
     value: PropTypes.any, // eslint-disable-line react/forbid-prop-types
@@ -191,3 +191,5 @@ export default class ParameterValueInput extends React.Component {
     );
   }
 }
+
+export default ParameterValueInput;
