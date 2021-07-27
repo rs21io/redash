@@ -1,4 +1,4 @@
-import { find, isArray, get, first, map, intersection, isEqual, isEmpty, round } from "lodash";
+import { find, isArray, get, first, map, intersection, isEqual, isEmpty } from "lodash";
 import React from "react";
 import PropTypes from "prop-types";
 import SelectWithVirtualScroll from "@/components/SelectWithVirtualScroll";
@@ -66,10 +66,6 @@ class QueryBasedParameterInput extends React.Component {
             arr.push(`${result[parameter.title]}`);
           }
         });
-        // value = value.filter(selection => {
-        //   console.log("value filtered:", !arr.includes(selection) ? selection : null);
-        //   return arr.includes(selection);
-        // });
         value = arr;
       }
 
@@ -88,7 +84,7 @@ class QueryBasedParameterInput extends React.Component {
     if (queryId && queryId !== this.state.queryId) {
       this.setState({ loading: true });
 
-      let options = await this.props.parameter.loadDropdownValues();
+      const options = await this.props.parameter.loadDropdownValues();
 
       // stale queryId check
       if (this.props.queryId === queryId) {
