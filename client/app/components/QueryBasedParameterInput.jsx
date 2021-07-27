@@ -50,12 +50,24 @@ class QueryBasedParameterInput extends React.Component {
 
   setValue(value) {
     const { options } = this.state;
-    const { queryResult, parameter } = this.props;
+    const { queryResult, parameter, widgets } = this.props;
 
     if (this.props.mode === "multiple") {
       value = isArray(value) ? value : [value];
       const arr = [];
-      if (queryResult.length >= 1 && !parameter.hasPendingValue) {
+      const widgetTypes = [];
+
+      widgets.forEach(widget => {
+        if (isArray(widget.visualization)) {
+          widget.visualization.forEach(visualization => {
+            widgetTypes.push(visualization.type);
+          });
+        } else if (widget.visualization) {
+          widgetTypes.push(widget.visualization.type);
+        }
+      });
+
+      if (widgetTypes.includes("SELECTION_TABLE") && !parameter.hasPendingValue) {
         queryResult.forEach(result => {
           if (!arr.includes(result[parameter.title])) {
             // Specifically checking the options value and queryResult of battery data because they differ i.e 100 vs 100.0
