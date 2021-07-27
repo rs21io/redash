@@ -9,10 +9,7 @@ import ParameterValueInput from "@/components/ParameterValueInput";
 import PlainButton from "@/components/PlainButton";
 import EditParameterSettingsDialog from "./EditParameterSettingsDialog";
 import { toHuman } from "@/lib/utils";
-
 import "./Parameters.less";
-import { connect } from "react-redux";
-import { getQueryAction } from "@/store";
 
 function updateUrl(parameters) {
   const params = extend({}, location.search);
@@ -22,7 +19,7 @@ function updateUrl(parameters) {
   location.setSearch(params, true);
 }
 
-class Parameters extends React.Component {
+export default class Parameters extends React.Component {
   static propTypes = {
     parameters: PropTypes.arrayOf(PropTypes.instanceOf(Parameter)),
     editable: PropTypes.bool,
@@ -32,7 +29,6 @@ class Parameters extends React.Component {
     onPendingValuesChange: PropTypes.func,
     onParametersEdit: PropTypes.func,
     appendSortableToParent: PropTypes.bool,
-    queryResult: PropTypes.any,
   };
 
   static defaultProps = {
@@ -44,7 +40,6 @@ class Parameters extends React.Component {
     onPendingValuesChange: () => {},
     onParametersEdit: () => {},
     appendSortableToParent: true,
-    queryResult: null,
   };
 
   constructor(props) {
@@ -57,7 +52,7 @@ class Parameters extends React.Component {
   }
 
   componentDidUpdate = prevProps => {
-    const { parameters, disableUrlUpdate, queryResult } = this.props;
+    const { parameters, disableUrlUpdate } = this.props;
     const parametersChanged = prevProps.parameters !== parameters;
     const disableUrlUpdateChanged = prevProps.disableUrlUpdate !== disableUrlUpdate;
     if (parametersChanged) {
@@ -76,28 +71,10 @@ class Parameters extends React.Component {
     }
   };
 
-  setPendingValue = (param, value, isDirty, queryResult) => {
+  setPendingValue = (param, value, isDirty) => {
     const { onPendingValuesChange } = this.props;
     this.setState(({ parameters }) => {
       if (isDirty) {
-        // const arr = [];
-
-        // // if (queryResult.length >= 1) {
-        // queryResult.forEach(result => {
-        //   if (!arr.includes(result[param.title])) {
-        //     // Specifically checking the options value and queryResult of battery data because they differ i.e 100 vs 100.0
-        //     if (result["soc_min" || "soc_max"] === 0 || 100) {
-        //       arr.push(`${result[param.title]}.0`);
-        //     }
-
-        //     arr.push(`${result[param.title]}`);
-        //   }
-        // });
-        // value = value.filter(selection => {
-        //   console.log(selection);
-        //   return arr.includes(selection);
-        // });
-        // }
         param.setPendingValue(value);
       } else {
         param.clearPendingValue();
@@ -144,7 +121,7 @@ class Parameters extends React.Component {
   };
 
   renderParameter(param, index) {
-    const { editable, widgets, queryResult } = this.props;
+    const { editable, widgets } = this.props;
     return (
       <div key={param.name} className="di-block" data-test={`ParameterName-${param.name}`}>
         <div className="parameter-heading">
@@ -167,7 +144,7 @@ class Parameters extends React.Component {
           widgets={widgets}
           enumOptions={param.enumOptions}
           queryId={param.queryId}
-          onSelect={(value, isDirty) => this.setPendingValue(param, value, isDirty, queryResult)}
+          onSelect={(value, isDirty) => this.setPendingValue(param, value, isDirty)}
         />
       </div>
     );
@@ -208,16 +185,3 @@ class Parameters extends React.Component {
     );
   }
 }
-
-function mapStateToProps(state) {
-  const { QueryData } = state;
-  return { queryResult: QueryData.Data };
-}
-
-const mapDispatchToProps = () => {
-  return {
-    getqueryaction: getQueryAction(),
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Parameters);

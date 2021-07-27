@@ -7,8 +7,6 @@ import InputNumber from "antd/lib/input-number";
 import DateParameter from "@/components/dynamic-parameters/DateParameter";
 import DateRangeParameter from "@/components/dynamic-parameters/DateRangeParameter";
 import QueryBasedParameterInput from "./QueryBasedParameterInput";
-import { connect } from "react-redux";
-import { getQueryAction } from "@/store";
 import "./ParameterValueInput.less";
 
 const multipleValuesProps = {
@@ -17,13 +15,12 @@ const multipleValuesProps = {
   maxTagPlaceholder: num => `+${num.length} more`,
 };
 
-class ParameterValueInput extends React.Component {
+export default class ParameterValueInput extends React.Component {
   static propTypes = {
     type: PropTypes.string,
     value: PropTypes.any, // eslint-disable-line react/forbid-prop-types
     enumOptions: PropTypes.string,
     queryId: PropTypes.number,
-    queryResult: PropTypes.any,
     parameter: PropTypes.any, // eslint-disable-line react/forbid-prop-types
     onSelect: PropTypes.func,
     className: PropTypes.string,
@@ -34,7 +31,6 @@ class ParameterValueInput extends React.Component {
     value: null,
     enumOptions: "",
     queryId: null,
-    queryResult: null,
     parameter: null,
     onSelect: () => {},
     className: "",
@@ -49,13 +45,12 @@ class ParameterValueInput extends React.Component {
   }
 
   componentDidUpdate = prevProps => {
-    const { value, parameter, queryResult } = this.props;
+    const { value, parameter } = this.props;
     // if value prop updated, reset dirty state
     if (prevProps.value !== value || prevProps.parameter !== parameter) {
       this.setState({
         value: parameter.hasPendingValue ? parameter.pendingValue : value,
         isDirty: parameter.hasPendingValue,
-        queryResult: queryResult,
       });
     }
   };
@@ -117,14 +112,13 @@ class ParameterValueInput extends React.Component {
   }
 
   renderQueryBasedInput() {
-    const { queryId, parameter, widgets } = this.props;
+    const { queryId, parameter } = this.props;
     const { value } = this.state;
     return (
       <QueryBasedParameterInput
         className={this.props.className}
         mode={parameter.multiValuesOptions ? "multiple" : "default"}
         parameter={parameter}
-        widgets={widgets}
         value={value}
         queryId={queryId}
         onSelect={this.onSelect}
@@ -197,16 +191,3 @@ class ParameterValueInput extends React.Component {
     );
   }
 }
-
-function mapStateToProps(state) {
-  const { QueryData } = state;
-  return { queryResult: QueryData.Data };
-}
-
-const mapDispatchToProps = () => {
-  return {
-    getqueryaction: getQueryAction(),
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(ParameterValueInput);
