@@ -7,7 +7,6 @@ import Popover from "antd/lib/popover";
 import { RendererPropTypes } from "@/visualizations/prop-types";
 import { formatSimpleTemplate } from "@/lib/value-format";
 
-
 import { prepareColumns, initRows, filterRows, sortRows } from "./utils";
 
 import "./renderer.less";
@@ -123,10 +122,10 @@ export default function Renderer({ options, data }: any) {
     let column: Record<string, any> = {};
     let prepared = { rows: rows };
 
-
     options.columns.forEach((optionColumn: Record<string, any>) => {
-      if (optionColumn.linkUrlTemplate !== "{{ @ }}") {
+      if (optionColumn.name === "cell_id") {
         column = optionColumn;
+        console.log(column.name);
       }
     });
 
@@ -137,8 +136,9 @@ export default function Renderer({ options, data }: any) {
       return {};
     }
 
-    const title = trim(formatSimpleTemplate(column.linkTitleTemplate, prepared));
-    const text = trim(formatSimpleTemplate(column.linkTextTemplate, prepared));
+    const title = trim(formatSimpleTemplate(button.name, prepared));
+
+    const text = trim(formatSimpleTemplate(button.name, prepared));
 
     const result = {
       href,
@@ -146,7 +146,6 @@ export default function Renderer({ options, data }: any) {
       target: button.linkOpenInNewTab ? "_blank" : "_self",
       title: title,
     };
-
     return result;
   }
 
@@ -157,17 +156,19 @@ export default function Renderer({ options, data }: any) {
   };
 
   options.buttonArr.forEach((button: any) => {
-  const { ...props } = prepareLink(selectedData, button);
-  button.props = {...props}
-  })
+    const { ...props } = prepareLink(selectedData, button);
+    button.props = { ...props };
+  });
 
   return (
     <div className="table-visualization-container">
-      {map(options.buttonArr, (button: any, index: any) => <button key={index} className="ant-btn-primary ant-btn" disabled={selectedData.length >= 1 ? false : true}>
-        <a className="link" {...button.props}>
-          {button.name}
-        </a>
-      </button>)}
+      {map(options.buttonArr, (button: any, index: any) => (
+        <button key={index} className="ant-btn-primary ant-btn" disabled={selectedData.length >= 1 ? false : true}>
+          <a className="link" {...button.props}>
+            {button.name}
+          </a>
+        </button>
+      ))}
       <Table
         rowSelection={{ type: "checkbox", ...rowSelection }}
         className="table-fixed-header"
