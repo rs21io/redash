@@ -3,19 +3,16 @@ import React from "react";
 import { Section, Input, Checkbox } from "@/components/visualizations/editor";
 import Button from "antd/lib/button";
 import { useState } from "react";
+import { EditorPropTypes } from "@/visualizations/prop-types";
 
 type Props = {
   options: {
-    name: string;
-    linkUrlTemplate?: string;
-    linkOpenInNewTab?: boolean;
+    buttonArr: any[]
   };
   onChange: (...args: any[]) => any;
 };
-
-const ButtonSettings = ({ onChange }: Props) => {
-  const [arr, setArr]: any[] = useState([{ name: "", linkUrlTemplate: "", linkOpenInNewTab: true }]);
-
+const ButtonSettings = ({options, onOptionsChange }: Props) => {
+  const [arr, setArr]: any[] = useState(options.buttonArr ? options.buttonArr :[{ name: "", linkUrlTemplate: "", linkOpenInNewTab: true }]);
   const handleChange = (event: any, item: any) => {
     if (event.target.id === "Button-Name") {
       item.name = event.target.value;
@@ -24,17 +21,19 @@ const ButtonSettings = ({ onChange }: Props) => {
     } else if (event.target.type === "checkbox") {
       item.linkOpenInNewTab = event.target.checked;
     }
-
     setArr((prevArr: any) => [...prevArr]);
   };
-
-  const doSomething = () => {
+  const createInputs = () => {
     setArr((prevItems: any) => [...prevItems, { name: "", linkUrlTemplate: "", linkOpenInNewTab: true }]);
   };
-
+  const addButton = () => {
+    const buttonArr = arr
+    onOptionsChange({buttonArr})
+  }
   return (
     <>
-      <Button onClick={doSomething}>Do Something</Button>
+      <Button onClick={createInputs}>Add Action</Button>
+      <Button onClick={addButton}>Add Button To Table</Button>
       {map(arr, (item: any, index: any) => {
         return (
           <React.Fragment key={index}>
@@ -58,7 +57,6 @@ const ButtonSettings = ({ onChange }: Props) => {
                 onChange={(event: any) => handleChange(event, item)}
               />
             </Section>
-
             {/* @ts-expect-error ts-migrate(2745) FIXME: This JSX tag's 'children' prop expects type 'never... Remove this comment to see the full error message */}
             <Section>
               <Checkbox
@@ -75,9 +73,5 @@ const ButtonSettings = ({ onChange }: Props) => {
     </>
   );
 };
-
-ButtonSettings.defaultProps = {
-  onChange: () => {},
-};
-
+ButtonSettings.defaultProps = EditorPropTypes;
 export default ButtonSettings;

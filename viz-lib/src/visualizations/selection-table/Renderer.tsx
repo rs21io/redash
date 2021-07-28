@@ -7,6 +7,7 @@ import Popover from "antd/lib/popover";
 import { RendererPropTypes } from "@/visualizations/prop-types";
 import { formatSimpleTemplate } from "@/lib/value-format";
 
+
 import { prepareColumns, initRows, filterRows, sortRows } from "./utils";
 
 import "./renderer.less";
@@ -158,11 +159,11 @@ export default function Renderer({ options, data }: any) {
 
   return (
     <div className="table-visualization-container">
-      <button className="ant-btn-primary ant-btn" disabled={selectedData.length >= 1 ? false : true}>
+      {map(options.buttonArr, (button: any, index) => <button key={index} className="ant-btn-primary ant-btn" disabled={selectedData.length >= 1 ? false : true}>
         <a className="link" {...props}>
-          Charts
+          {button.name}
         </a>
-      </button>
+      </button>)}
       <Table
         rowSelection={{ type: "checkbox", ...rowSelection }}
         className="table-fixed-header"
