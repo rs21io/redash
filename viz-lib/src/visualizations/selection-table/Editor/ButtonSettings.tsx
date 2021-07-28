@@ -4,15 +4,17 @@ import { Section, Input, Checkbox } from "@/components/visualizations/editor";
 import Button from "antd/lib/button";
 import { useState } from "react";
 import { EditorPropTypes } from "@/visualizations/prop-types";
+import DeleteOutlinedIcon from "@ant-design/icons/DeleteOutlined"
+import { useEffect } from "react";
 
 type Props = {
   options: {
     buttonArr: any[]
   };
-  onChange: (...args: any[]) => any;
+  onOptionsChange: (...args: any[]) => any;
 };
 const ButtonSettings = ({options, onOptionsChange }: Props) => {
-  const [arr, setArr]: any[] = useState(options.buttonArr ? options.buttonArr :[{ name: "", linkUrlTemplate: "", linkOpenInNewTab: true }]);
+  const [arr, setArr]: any[] = useState(options.buttonArr ? options.buttonArr : [{ name: "", linkUrlTemplate: "", linkOpenInNewTab: true }]);
   const handleChange = (event: any, item: any) => {
     if (event.target.id === "Button-Name") {
       item.name = event.target.value;
@@ -28,8 +30,22 @@ const ButtonSettings = ({options, onOptionsChange }: Props) => {
   };
   const addButton = () => {
     const buttonArr = arr
+    console.log('buttonArr', buttonArr)
     onOptionsChange({buttonArr})
   }
+  const deleteButton = (button: any) => {
+    const buttonArr = [...arr]
+    const newArr = buttonArr.filter((item: any) => item !== button);
+    setArr(newArr)
+    console.log('arr', buttonArr)
+    onOptionsChange({buttonArr})
+  }
+
+  useEffect(() => {
+    const buttonArr = arr
+    onOptionsChange({buttonArr})
+  }, [arr])
+
   return (
     <>
       <Button onClick={createInputs}>Add Action</Button>
@@ -66,6 +82,12 @@ const ButtonSettings = ({options, onOptionsChange }: Props) => {
                 onChange={event => handleChange(event, item)}>
                 Open in new tab
               </Checkbox>
+            </Section>
+            {/* @ts-expect-error ts-migrate(2745) FIXME: This JSX tag's 'children' prop expects type 'never... Remove this comment to see the full error message */}
+            <Section>
+              <Button onClick={() => deleteButton(item)}>
+                <DeleteOutlinedIcon/>
+              </Button>
             </Section>
           </React.Fragment>
         );

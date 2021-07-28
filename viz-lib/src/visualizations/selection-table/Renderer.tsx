@@ -119,9 +119,10 @@ export default function Renderer({ options, data }: any) {
     return null;
   }
 
-  function prepareLink(rows: Record<string, any>) {
+  function prepareLink(rows: Record<string, any>, button: any) {
     let column: Record<string, any> = {};
     let prepared = { rows: rows };
+
 
     options.columns.forEach((optionColumn: Record<string, any>) => {
       if (optionColumn.linkUrlTemplate !== "{{ @ }}") {
@@ -131,7 +132,7 @@ export default function Renderer({ options, data }: any) {
 
     prepared = extend({ "@": prepared.rows.map((row: Record<string, any>) => row[column.name]) }, prepared);
 
-    const href = trim(formatSimpleTemplate(column.linkUrlTemplate, prepared));
+    const href = trim(formatSimpleTemplate(button.linkUrlTemplate, prepared));
     if (href === "") {
       return {};
     }
@@ -142,7 +143,7 @@ export default function Renderer({ options, data }: any) {
     const result = {
       href,
       text: text,
-      target: column.linkOpenInNewTab ? "_blank" : "_self",
+      target: button.linkOpenInNewTab ? "_blank" : "_self",
       title: title,
     };
 
@@ -155,12 +156,15 @@ export default function Renderer({ options, data }: any) {
     },
   };
 
-  const { ...props } = prepareLink(selectedData);
+  options.buttonArr.forEach((button: any) => {
+  const { ...props } = prepareLink(selectedData, button);
+  button.props = {...props}
+  })
 
   return (
     <div className="table-visualization-container">
-      {map(options.buttonArr, (button: any, index) => <button key={index} className="ant-btn-primary ant-btn" disabled={selectedData.length >= 1 ? false : true}>
-        <a className="link" {...props}>
+      {map(options.buttonArr, (button: any, index: any) => <button key={index} className="ant-btn-primary ant-btn" disabled={selectedData.length >= 1 ? false : true}>
+        <a className="link" {...button.props}>
           {button.name}
         </a>
       </button>)}
