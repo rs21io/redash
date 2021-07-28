@@ -1,11 +1,8 @@
 import { map } from "lodash";
 import React from "react";
-import { useDebouncedCallback } from "use-debounce";
 import { Section, Input, Checkbox } from "@/components/visualizations/editor";
-import { EditorPropTypes } from "@/visualizations/prop-types";
 import Button from "antd/lib/button";
-import { useState, useEffect } from "react";
-import Item from "antd/lib/list/Item";
+import { useState } from "react";
 
 type Props = {
   options: {
@@ -18,8 +15,8 @@ type Props = {
 
 const ButtonSettings = ({ onChange }: Props) => {
   const [arr, setArr]: any[] = useState([{ name: "", linkUrlTemplate: "", linkOpenInNewTab: true }]);
+
   const handleChange = (event: any, item: any) => {
-    console.log(event.target, item);
     if (event.target.id === "Button-Name") {
       item.name = event.target.value;
     } else if (event.target.id === "URL-Template") {
@@ -27,16 +24,12 @@ const ButtonSettings = ({ onChange }: Props) => {
     } else if (event.target.type === "checkbox") {
       item.linkOpenInNewTab = event.target.checked;
     }
+
     setArr((prevArr: any) => [...prevArr]);
   };
-  const [onChangeDebounced] = useDebouncedCallback(onChange, 200);
-  const [test, setTest]: any[] = useState([]);
-  const [options, setOptions]: any[] = useState([]);
 
   const doSomething = () => {
-    // arr.push({name: "", linkUrlTemplate: "", linkOpenInNewTab: false})
     setArr((prevItems: any) => [...prevItems, { name: "", linkUrlTemplate: "", linkOpenInNewTab: true }]);
-    console.log("arr", arr);
   };
 
   return (
