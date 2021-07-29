@@ -24,7 +24,7 @@ const ButtonSettings = ({ options, onOptionsChange }: Props) => {
       item.name = event.target.value;
     } else if (event.target.id === "URL-Template" + index) {
       item.linkUrlTemplate = event.target.value;
-    } else if (event.target.type === "checkbox" + index) {
+    } else if (event.target.type === "checkbox") {
       item.linkOpenInNewTab = event.target.checked;
     }
 
