@@ -72,15 +72,16 @@ class QueryBasedParameterInput extends React.Component {
       if (!parameter.hasPendingValue) {
         queryresult.forEach(result => {
           if (!arr.includes(result[parameter.title])) {
-            // Specifically checking the options value and queryResult of battery data because they differ i.e 100 vs 100.0
-            if (result["soc_min" || "soc_max"] === 0 || 100) {
-              arr.push(`${result[parameter.title]}.0`);
+            if (result[parameter.title]) {
+              // Specifically checking the options value and queryResult of battery data because they differ i.e 100 vs 100.0
+              if (result["soc_min" || "soc_max"] === 0 || 100) {
+                arr.push(`${result[parameter.title]}.0`);
+              }
+              arr.push(`${result[parameter.title]}`);
             }
-
-            arr.push(`${result[parameter.title]}`);
           }
         });
-        value = !arr.includes("undefined") ? arr : value;
+        value = arr.length >= 1 ? arr : value;
       }
 
       const optionValues = map(options, option => option.value);
