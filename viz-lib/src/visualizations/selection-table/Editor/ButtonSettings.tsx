@@ -1,20 +1,24 @@
 import { map } from "lodash";
 import React from "react";
-import { Section, Input, Checkbox } from "@/components/visualizations/editor";
+import { Section, Input, Checkbox, Select } from "@/components/visualizations/editor";
 import Button from "antd/lib/button";
 import { useState } from "react";
 import { EditorPropTypes } from "@/visualizations/prop-types";
-import DeleteOutlinedIcon from "@ant-design/icons/DeleteOutlined"
+import DeleteOutlinedIcon from "@ant-design/icons/DeleteOutlined";
 import { useEffect } from "react";
 
 type Props = {
   options: {
-    buttonArr: any[]
+    buttonArr: any[];
+    columns: any[];
   };
   onOptionsChange: (...args: any[]) => any;
 };
-const ButtonSettings = ({options, onOptionsChange }: Props) => {
-  const [arr, setArr]: any[] = useState(options.buttonArr ? options.buttonArr : [{ name: "", linkUrlTemplate: "", linkOpenInNewTab: true }]);
+const ButtonSettings = ({ options, onOptionsChange }: Props) => {
+  const [arr, setArr]: any[] = useState(
+    options.buttonArr ? options.buttonArr : [{ name: "", linkUrlTemplate: "", linkOpenInNewTab: true, columnName: "" }]
+  );
+
   const handleChange = (event: any, item: any) => {
     if (event.target.id === "Button-Name") {
       item.name = event.target.value;
@@ -23,28 +27,40 @@ const ButtonSettings = ({options, onOptionsChange }: Props) => {
     } else if (event.target.type === "checkbox") {
       item.linkOpenInNewTab = event.target.checked;
     }
+
     setArr((prevArr: any) => [...prevArr]);
   };
-  const createInputs = () => {
-    setArr((prevItems: any) => [...prevItems, { name: "", linkUrlTemplate: "", linkOpenInNewTab: true }]);
+
+  const handleDropdown = (event: any, item: any) => {
+    if (event) item.columnName = event;
+
+    setArr((prevArr: any) => [...prevArr]);
   };
+
+  const createInputs = () => {
+    setArr((prevItems: any) => [
+      ...prevItems,
+      { name: "", linkUrlTemplate: "", linkOpenInNewTab: true, columnName: "" },
+    ]);
+  };
+
   const addButton = () => {
-    const buttonArr = arr
-    console.log('buttonArr', buttonArr)
-    onOptionsChange({buttonArr})
-  }
+    const buttonArr = arr;
+    console.log("buttonArr", buttonArr);
+    onOptionsChange({ buttonArr });
+  };
   const deleteButton = (button: any) => {
-    const buttonArr = [...arr]
+    const buttonArr = [...arr];
     const newArr = buttonArr.filter((item: any) => item !== button);
-    setArr(newArr)
-    console.log('arr', buttonArr)
-    onOptionsChange({buttonArr})
-  }
+    setArr(newArr);
+    console.log("arr", buttonArr);
+    onOptionsChange({ buttonArr });
+  };
 
   useEffect(() => {
-    const buttonArr = arr
-    onOptionsChange({buttonArr})
-  }, [arr])
+    const buttonArr = arr;
+    onOptionsChange({ buttonArr });
+  }, [arr]);
 
   return (
     <>
@@ -75,6 +91,19 @@ const ButtonSettings = ({options, onOptionsChange }: Props) => {
             </Section>
             {/* @ts-expect-error ts-migrate(2745) FIXME: This JSX tag's 'children' prop expects type 'never... Remove this comment to see the full error message */}
             <Section>
+              <Select
+                label="Parameters"
+                id="Column-Dropdown"
+                // data-test="Table.ColumnEditor.Link.UrlTemplate"
+                defaultValue={item.columnName}
+                onChange={(event: any) => handleDropdown(event, item)}>
+                {options.columns.map((column: any) => (
+                  <Select.Option key={column.name}>{column.name}</Select.Option>
+                ))}
+              </Select>
+            </Section>
+            {/* @ts-expect-error ts-migrate(2745) FIXME: This JSX tag's 'children' prop expects type 'never... Remove this comment to see the full error message */}
+            <Section>
               <Checkbox
                 // data-test="Table.ColumnEditor.Link.OpenInNewTab"
                 value={item.linkOpenInNewTab}
@@ -86,7 +115,7 @@ const ButtonSettings = ({options, onOptionsChange }: Props) => {
             {/* @ts-expect-error ts-migrate(2745) FIXME: This JSX tag's 'children' prop expects type 'never... Remove this comment to see the full error message */}
             <Section>
               <Button onClick={() => deleteButton(item)}>
-                <DeleteOutlinedIcon/>
+                <DeleteOutlinedIcon />
               </Button>
             </Section>
           </React.Fragment>

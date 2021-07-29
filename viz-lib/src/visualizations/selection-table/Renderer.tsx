@@ -125,7 +125,6 @@ export default function Renderer({ options, data }: any) {
     options.columns.forEach((optionColumn: Record<string, any>) => {
       if (optionColumn.name === "cell_id") {
         column = optionColumn;
-        console.log(column.name);
       }
     });
 
