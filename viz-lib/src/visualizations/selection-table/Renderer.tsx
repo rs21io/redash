@@ -119,16 +119,9 @@ export default function Renderer({ options, data }: any) {
   }
 
   function prepareLink(rows: Record<string, any>, button: any) {
-    let column: Record<string, any> = {};
     let prepared = { rows: rows };
 
-    options.columns.forEach((optionColumn: Record<string, any>) => {
-      if (optionColumn.name === "cell_id") {
-        column = optionColumn;
-      }
-    });
-
-    prepared = extend({ "@": prepared.rows.map((row: Record<string, any>) => row[column.name]) }, prepared);
+    prepared = extend({ "@": prepared.rows.map((row: Record<string, any>) => row[button.columnName]) }, prepared);
 
     const href = trim(formatSimpleTemplate(button.linkUrlTemplate, prepared));
     if (href === "") {
