@@ -118,33 +118,26 @@ export default function Renderer({ options, data }: any) {
     return null;
   }
 
-  function prepareLink(rows: Record<string, any>) {
-    let column: Record<string, any> = {};
+  function prepareLink(rows: Record<string, any>, button: any) {
     let prepared = { rows: rows };
 
-    options.columns.forEach((optionColumn: Record<string, any>) => {
-      if (optionColumn.linkUrlTemplate !== "{{ @ }}") {
-        column = optionColumn;
-      }
-    });
+    prepared = extend({ "@": prepared.rows.map((row: Record<string, any>) => row[button.columnName]) }, prepared);
 
-    prepared = extend({ "@": prepared.rows.map((row: Record<string, any>) => row[column.name]) }, prepared);
-
-    const href = trim(formatSimpleTemplate(column.linkUrlTemplate, prepared));
+    const href = trim(formatSimpleTemplate(button.linkUrlTemplate, prepared));
     if (href === "") {
       return {};
     }
 
-    const title = trim(formatSimpleTemplate(column.linkTitleTemplate, prepared));
-    const text = trim(formatSimpleTemplate(column.linkTextTemplate, prepared));
+    const title = trim(formatSimpleTemplate(button.name, prepared));
+
+    const text = trim(formatSimpleTemplate(button.name, prepared));
 
     const result = {
       href,
       text: text,
-      target: column.linkOpenInNewTab ? "_blank" : "_self",
+      target: button.linkOpenInNewTab ? "_blank" : "_self",
       title: title,
     };
-
     return result;
   }
 
@@ -154,15 +147,20 @@ export default function Renderer({ options, data }: any) {
     },
   };
 
-  const { ...props } = prepareLink(selectedData);
+  options.buttonArr.forEach((button: any) => {
+    const { ...props } = prepareLink(selectedData, button);
+    button.props = { ...props };
+  });
 
   return (
     <div className="table-visualization-container">
-      <button className="ant-btn-primary ant-btn" disabled={selectedData.length >= 1 ? false : true}>
-        <a className="link" {...props}>
-          Charts
-        </a>
-      </button>
+      {map(options.buttonArr, (button: any, index: any) => (
+        <button key={index} className="ant-btn-primary ant-btn" disabled={selectedData.length >= 1 ? false : true}>
+          <a className="link" {...button.props}>
+            {button.name}
+          </a>
+        </button>
+      ))}
       <Table
         rowSelection={{ type: "checkbox", ...rowSelection }}
         className="table-fixed-header"
