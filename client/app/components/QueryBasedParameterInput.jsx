@@ -69,7 +69,7 @@ class QueryBasedParameterInput extends React.Component {
         });
       }
 
-      if (widgetTypes.includes("SELECTION_TABLE") && !parameter.hasPendingValue) {
+      if (!parameter.hasPendingValue) {
         queryresult.forEach(result => {
           if (!arr.includes(result[parameter.title])) {
             // Specifically checking the options value and queryResult of battery data because they differ i.e 100 vs 100.0
@@ -80,7 +80,7 @@ class QueryBasedParameterInput extends React.Component {
             arr.push(`${result[parameter.title]}`);
           }
         });
-        value = arr;
+        value = !arr.includes("undefined") ? arr : value;
       }
 
       const optionValues = map(options, option => option.value);
