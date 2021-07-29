@@ -1,6 +1,6 @@
 import { find, isArray, get, first, map, intersection, isEqual, isEmpty } from "lodash";
 import React from "react";
-import PropTypes from "prop-types";
+import PropTypes, { number } from "prop-types";
 import SelectWithVirtualScroll from "@/components/SelectWithVirtualScroll";
 import { connect } from "react-redux";
 import { getQueryAction } from "@/store";
@@ -50,41 +50,26 @@ class QueryBasedParameterInput extends React.Component {
 
   setValue(value) {
     const { options } = this.state;
-    const { queryresult, parameter, widgets } = this.props;
+    const { queryresult, parameter } = this.props;
 
     if (this.props.mode === "multiple") {
       value = isArray(value) ? value : [value];
-      const arr = [];
-      const widgetTypes = [];
-
-      if (widgets) {
-        widgets.forEach(widget => {
-          if (isArray(widget.visualization)) {
-            widget.visualization.forEach(visualization => {
-              widgetTypes.push(visualization.type);
-            });
-          } else if (widget.visualization) {
-            widgetTypes.push(widget.visualization.type);
-          }
-        });
-      }
+      const selections = [];
 
       if (!parameter.hasPendingValue) {
         queryresult.forEach(result => {
-          if (!arr.includes(result[parameter.title])) {
+          if (!selections.includes(result[parameter.title])) {
             if (result[parameter.title]) {
-              // Specifically checking the options value and queryResult of battery data because they differ i.e 100 vs 100.0
-              if (result["soc_min" || "soc_max"] === 0 || 100) {
-                arr.push(`${result[parameter.title]}.0`);
-              }
-              arr.push(`${result[parameter.title]}`);
+              selections.push(result[parameter.title]);
+            } else if (result[parameter.title] === 0 && typeof result[parameter.title] === "number") {
+              selections.push(result[parameter.title]);
             }
           }
         });
-        value = arr.length >= 1 ? arr : value;
+        value = selections.length >= 1 ? selections : value;
       }
 
-      const optionValues = map(options, option => option.value);
+      const optionValues = map(options, option => option.name);
       const validValues = intersection(value, optionValues);
       this.setState({ value: validValues });
       return validValues;

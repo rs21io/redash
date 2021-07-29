@@ -7,6 +7,7 @@ import InputNumber from "antd/lib/input-number";
 import DateParameter from "@/components/dynamic-parameters/DateParameter";
 import DateRangeParameter from "@/components/dynamic-parameters/DateRangeParameter";
 import QueryBasedParameterInput from "./QueryBasedParameterInput";
+
 import "./ParameterValueInput.less";
 
 const multipleValuesProps = {
@@ -112,7 +113,7 @@ class ParameterValueInput extends React.Component {
   }
 
   renderQueryBasedInput() {
-    const { queryId, parameter, widgets } = this.props;
+    const { queryId, parameter } = this.props;
     const { value } = this.state;
     return (
       <QueryBasedParameterInput
@@ -121,7 +122,6 @@ class ParameterValueInput extends React.Component {
         parameter={parameter}
         value={value}
         queryId={queryId}
-        widgets={widgets}
         onSelect={this.onSelect}
         style={{ minWidth: 60 }}
         {...multipleValuesProps}
