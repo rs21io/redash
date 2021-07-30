@@ -60,16 +60,19 @@ class QueryBasedParameterInput extends React.Component {
         queryresult.forEach(result => {
           if (!selections.includes(result[parameter.title])) {
             if (result[parameter.title]) {
-              selections.push(result[parameter.title]);
+              if (result[parameter.title] === 100) {
+                selections.push(`${result[parameter.title]}.0`);
+              }
+              selections.push(`${result[parameter.title]}`);
             } else if (result[parameter.title] === 0 && typeof result[parameter.title] === "number") {
-              selections.push(result[parameter.title]);
+              selections.push(`${result[parameter.title]}.0`);
             }
           }
         });
         value = selections.length >= 1 ? selections : value;
       }
 
-      const optionValues = map(options, option => option.name);
+      const optionValues = map(options, option => option.value);
       const validValues = intersection(value, optionValues);
       this.setState({ value: validValues });
       return validValues;
