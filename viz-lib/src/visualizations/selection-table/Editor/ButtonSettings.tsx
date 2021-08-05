@@ -89,7 +89,7 @@ const ButtonSettings = ({ options, onOptionsChange }: Props) => {
                 defaultValue={item.columnName}
                 onChange={(event: any) => handleDropdown(event, item)}>
                 {options.columns.map((column: any) => (
-                  <Select.Option key={column.name}>{column.name}</Select.Option>
+                  <option key={column.name}>{column.name}</option>
                 ))}
               </Select>
             </Section>
