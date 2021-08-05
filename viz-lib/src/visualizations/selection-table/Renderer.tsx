@@ -1,6 +1,7 @@
 import { filter, map, get, initial, last, reduce, extend, trim } from "lodash";
 import React, { useMemo, useState, useEffect } from "react";
 import Table from "antd/lib/table";
+import Button from "antd/lib/button";
 import Input from "antd/lib/input";
 import InfoCircleFilledIcon from "@ant-design/icons/InfoCircleFilled";
 import Popover from "antd/lib/popover";
@@ -155,11 +156,11 @@ export default function Renderer({ options, data }: any) {
   return (
     <div className="table-visualization-container">
       {map(options.buttonArr, (button: any, index: any) => (
-        <button key={index} className="ant-btn-primary ant-btn" disabled={selectedData.length >= 1 ? false : true}>
+        <Button key={index} className=" ant-btn" type="primary" disabled={selectedData.length >= 1 ? false : true}>
           <a className="link" {...button.props}>
             {button.name}
           </a>
-        </button>
+        </Button>
       ))}
       <Table
         rowSelection={{ type: "checkbox", ...rowSelection }}
