@@ -1,6 +1,7 @@
 import { filter, map, get, initial, last, reduce, extend, trim } from "lodash";
 import React, { useMemo, useState, useEffect } from "react";
 import Table from "antd/lib/table";
+import Button from "antd/lib/button";
 import Input from "antd/lib/input";
 import InfoCircleFilledIcon from "@ant-design/icons/InfoCircleFilled";
 import Popover from "antd/lib/popover";
@@ -58,7 +59,7 @@ function SearchInputInfoIcon({ searchColumns }: any) {
 type OwnSearchInputProps = {
   onChange?: (...args: any[]) => any;
 };
-
+// @ts-ignore
 type SearchInputProps = OwnSearchInputProps & typeof SearchInput.defaultProps;
 
 // @ts-expect-error ts-migrate(2339) FIXME: Property 'searchColumns' does not exist on type 'S... Remove this comment to see the full error message
@@ -155,11 +156,11 @@ export default function Renderer({ options, data }: any) {
   return (
     <div className="table-visualization-container">
       {map(options.buttonArr, (button: any, index: any) => (
-        <button key={index} className="ant-btn-primary ant-btn" disabled={selectedData.length >= 1 ? false : true}>
+        <Button key={index} className=" ant-btn" type="primary" disabled={selectedData.length >= 1 ? false : true}>
           <a className="link" {...button.props}>
             {button.name}
           </a>
-        </button>
+        </Button>
       ))}
       <Table
         rowSelection={{ type: "checkbox", ...rowSelection }}
