@@ -69,7 +69,7 @@ class QueryBasedParameterInput extends React.Component {
         });
       }
 
-      if (!parameter.hasPendingValue) {
+      if (widgetTypes.includes("SELECTION_TABLE") && !parameter.hasPendingValue) {
         queryresult.forEach(result => {
           if (!arr.includes(result[parameter.title])) {
             if (result[parameter.title]) {
