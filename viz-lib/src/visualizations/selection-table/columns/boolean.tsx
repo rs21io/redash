@@ -13,7 +13,7 @@ type Props = {
 
 function Editor({ column, onChange }: Props) {
   function handleChange(index: any, value: any) {
-    // @ts-expect-error ts-migrate(2488) FIXME: Type 'string[] | undefined' must have a '[Symbol.i... Remove this comment to see the full error message
+    // @ts-ignore
     const booleanValues = [...column.booleanValues];
     booleanValues.splice(index, 1, value);
     onChange({ booleanValues });
