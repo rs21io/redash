@@ -59,7 +59,7 @@ function SearchInputInfoIcon({ searchColumns }: any) {
 type OwnSearchInputProps = {
   onChange?: (...args: any[]) => any;
 };
-
+// @ts-ignore
 type SearchInputProps = OwnSearchInputProps & typeof SearchInput.defaultProps;
 
 // @ts-expect-error ts-migrate(2339) FIXME: Property 'searchColumns' does not exist on type 'S... Remove this comment to see the full error message
